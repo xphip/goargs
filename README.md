@@ -26,15 +26,7 @@ func main() {
 			Name:        "all",
 			Description: "Returns all results.",
 			Args:        nil,
-			Exec:        func(args []string) error {
-
-				tmp := `{"id":%s,"username":"%s"}`
-				user1 := fmt.Sprintf(tmp, "0", "User1")
-				user2 := fmt.Sprintf(tmp, "1", "User2")
-				fmt.Printf("[%s,%s]\n", user1, user2)
-
-				return nil
-			},
+			Exec:        SearchAll,
 		}),
 		Exec:        nil,
 	})
@@ -42,5 +34,15 @@ func main() {
 	if err := args.Parse(); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func SearchAll(args []string) error {
+
+	tmp := `{"id":%s,"username":"%s"}`
+	user1 := fmt.Sprintf(tmp, "0", "User1")
+	user2 := fmt.Sprintf(tmp, "1", "User2")
+	fmt.Printf("[%s,%s]\n", user1, user2)
+
+	return nil
 }
 ```
