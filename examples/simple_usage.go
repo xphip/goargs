@@ -11,10 +11,10 @@ func main() {
 
 	args.AddArgs(&goargs.Arg{
 		Name:        "search",
-		Description: "This is a search command and nothing.",
+		Description: "This is the subcommand for search.",
 		Args:        goargs.AddArgs(&goargs.Arg{
 			Name:        "all",
-			Description: "Search for all nothings",
+			Description: "Returns all results.",
 			Args:        nil,
 			Exec:        func(args []string) error {
 
@@ -27,7 +27,7 @@ func main() {
 			},
 		}, &goargs.Arg{
 			Name:        "id",
-			Description: "Search for ID of nothing.",
+			Description: "Returns a search by ID.",
 			Args:        nil,
 			Exec: SearchByID,
 		}),
