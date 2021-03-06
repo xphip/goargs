@@ -13,16 +13,18 @@ func main() {
 	args := goargs.New()
 
 	// $ ./simple_usage version
-	args.Add("version").
+	args.
+		Add("version").
 		Usage("Print app version").
 		Exec(Version)
 
 	search := args.Add("search").Usage("Search for something")
 
 	// $ ./simple_usage search all
-	search.Add("all").
-			Usage("Return all matches").
-			Exec(SearchAll)
+	search.
+		Add("all").
+		Usage("Return all matches").
+		Exec(SearchAll)
 
 	// $ ./simple_usage search id <userID>
 	search.
@@ -59,7 +61,7 @@ func SearchAll(args []string) error {
 }
 
 func SearchByID(args []string) error {
-	if len(args) == 1 {
+	if len(args) == 0 {
 		return errors.New("error: missing userID")
 	}
 
