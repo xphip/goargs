@@ -15,13 +15,13 @@ import (
 )
 
 func main() {
-	args := goargs.New()
+	cmd := goargs.New()
 
-	args.Add("version").
+	cmd.Add("version").
 	     Usage("Print app version").
 	     Exec(Version)
 
-	if err := args.Parse(); err != nil {
+	if err := cmd.Parse(); err != nil {
 	    fmt.Println(err)
 	}
 }

@@ -10,15 +10,15 @@ import (
 )
 
 func main() {
-	args := goargs.New()
+	cmd := goargs.New()
 
 	// $ ./simple_usage version
-	args.
+	cmd.
 		Add("version").
 		Usage("Print app version").
 		Exec(Version)
 
-	search := args.Add("search").Usage("Search for something")
+	search := cmd.Add("search").Usage("Search for something")
 
 	// $ ./simple_usage search all
 	search.
@@ -32,7 +32,7 @@ func main() {
 		Usage("Search by user ID").
 		Exec(SearchByID)
 
-	if err := args.Parse(); err != nil {
+	if err := cmd.Parse(); err != nil {
 		fmt.Println(err)
 	}
 }
