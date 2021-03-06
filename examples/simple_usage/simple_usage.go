@@ -18,6 +18,7 @@ func main() {
 		Usage("Print app version").
 		Exec(Version)
 
+	// Create a group
 	search := cmd.Add("search").Usage("Search for something")
 
 	// $ ./simple_usage search all
