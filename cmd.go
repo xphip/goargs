@@ -1,43 +1,26 @@
 package goargs
 
-import "errors"
+import (
+	"errors"
+)
 
 type Cmd struct {
-	name   string
-	usage  string
-	subCmd CmdMap
-	exec   func(args []string) error
-}
-
-type CmdMap map[string]*Cmd
-
-func (cmd *Cmd) parse(args []string) error {
-	var arg = ""
-	if len(args) > 0 {
-		arg = args[0]
-	}
-
-	if cmd.exec != nil {
-		return cmd.exec(args)
-
-	} else if len(args) == 0 {
-		return errors.New(MissingParameter)
-
-	} else if subCmd, ok := cmd.subCmd[arg]; ok {
-		return subCmd.parse(args[1:])
-
-	} else {
-		return errors.New(UnknownCommand)
-	}
+	name    string
+	usage   string
+	mapping []string
+	subCmd  map[string]*Cmd
+	exec    func (args *Args) error
 }
 
 func (cmd *Cmd) Add(name string) *Cmd {
-	newCmd := &Cmd{
-		name: name,
-		subCmd: make(CmdMap),
+	cmd.subCmd[name] = &Cmd{
+		name:    name,
+		usage:   "",
+		mapping: make([]string, 0),
+		subCmd:  make(map[string]*Cmd),
+		exec:    nil,
 	}
-	cmd.subCmd[name] = newCmd
-	return newCmd
+	return cmd
 }
 
 func (cmd *Cmd) Usage(usage string) *Cmd {
@@ -45,7 +28,32 @@ func (cmd *Cmd) Usage(usage string) *Cmd {
 	return cmd
 }
 
-func (cmd *Cmd) Exec(fn func(args []string) error) *Cmd {
-	cmd.exec = fn
+func (cmd *Cmd) Map(mapping []string) *Cmd {
+	cmd.mapping = mapping
 	return cmd
+}
+
+func (cmd *Cmd) Exec(fn func (args *Args) error) {
+	cmd.exec = fn
+}
+
+func (cmd *Cmd) parseArgs(a []string) (*Args, error) {
+	a = a[1:]
+
+	if len(cmd.mapping) > len(a) {
+		return nil, errors.New(MissingParameter)
+	}
+
+	args := NewArgs()
+
+	for _, arg := range cmd.mapping {
+		args.AddMapped(arg, a[0])
+		a = a[1:]
+	}
+
+	for _, arg := range a {
+		args.AddUnmapped(arg)
+	}
+
+	return args, nil
 }

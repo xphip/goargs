@@ -13,42 +13,59 @@ var (
 )
 
 type GoArgs struct {
-	subCmd     CmdMap
+	cmd        *Cmd
 	helperFlag string
 }
 
 func New() *GoArgs {
-	return &GoArgs{
-		subCmd: make(CmdMap),
+	ga := &GoArgs{
+		cmd: &Cmd{
+			subCmd: make(map[string]*Cmd),
+		},
 		helperFlag: "help",
 	}
+	return ga
 }
 
-func (a *GoArgs) Add(name string) *Cmd {
-	newCmd := &Cmd{
-		name: name,
-		subCmd: make(CmdMap),
+func (ga *GoArgs) Add(name string) *Cmd {
+	ga.cmd.Add(name)
+	return ga.cmd.subCmd[name]
+}
+
+func (ga *GoArgs) Parse() error {
+
+	var _args []string
+	var cmd = ga.cmd
+
+	if len(os.Args) <= 1 {
+		return errors.New("usage here")
 	}
-	a.subCmd[name] = newCmd
-	return newCmd
-}
 
-func (a *GoArgs) Parse() error {
-	args := os.Args[1:]
+	_args = os.Args[1:]
 
-	if len(args) == 0 {
-		return errors.New(MissingParameter)
-
-	} else if cmd, ok := a.subCmd[args[0]]; ok {
-		return cmd.parse(args[1:])
-
-	} else {
+	if _cmd, ok := cmd.subCmd[_args[0]]; !ok {
 		return errors.New(UnknownCommand)
+	} else {
+		cmd = _cmd
 	}
 
+	for len(_args) > 0 && len(cmd.subCmd) != 0 {
+		if _cmd, ok := cmd.subCmd[_args[0]]; ok {
+			cmd = _cmd
+			_args = _args[1:]
+		} else {
+			return errors.New(UnknownCommand)
+		}
+	}
+
+	if cmd.exec == nil {
+		return nil
+	}
+
+	args, err := cmd.parseArgs(_args)
+	if err != nil {
+		return err
+	}
+
+	return cmd.exec(args)
 }
-
-
-
-
-
