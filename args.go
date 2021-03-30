@@ -39,7 +39,7 @@ func (args *Args) GetUnmapped() []*Arg {
 }
 
 func (args *Args) GetPos(position int) *Arg {
-	if position <= 0 || position > args.Size() - 1 {
+	if position < 0 || position > args.Size() - 1 {
 		return nil
 	}
 	return args.list[position]
