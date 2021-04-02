@@ -20,7 +20,7 @@ func (args *Args) addMapped(name string, value string) {
 	args.mapped[name] = &val
 }
 
-// addMapped adds an unmapped argument
+// addMapped adds an unmapped argument.
 func (args *Args) addUnmapped(value string) {
 	val := Arg(value)
 	args.list = append(args.list, &val)
@@ -45,7 +45,7 @@ func (args *Args) GetUnmapped() []*Arg {
 	return args.list
 }
 
-// GetPos returns an unmapped argument based on its index.
+// GetPos returns an unmapped argument by the position.
 func (args *Args) GetPos(position int) *Arg {
 	if position < 0 || position > len(args.list) - 1 {
 		return nil
