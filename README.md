@@ -9,7 +9,6 @@ _(WIP)_ Light implementation for command-line flag parsing.
 < ./simple_usage test a b c
 > First(string): a
   Second(number or -1): -1
-
   map[first:a second:b]
   [c]
 ``` 
@@ -19,18 +18,20 @@ func main() {
 
     cmd.Add("version").Usage("Print app version").Exec(Version)
 
-    cmd.
-        Add("test").
+    cmd.Add("test").
         Usage("Print app version").
         Map([]string{"first", "second"}).
         Exec(func(args *goargs.Args) error {
-            fmt.Printf("First(string): %s\nSecond(number or -1): %d\n\n",
-                args.Get("first").String(),
-                args.Get("second").Int(-1))
-            fmt.Println(args.GetMapped())
-            fmt.Println(args.GetUnmapped())
 
-            return nil
+        fmt.Printf("First(string): %s\n",
+            args.Get("first").String())
+        fmt.Printf("Second(number or -1): %d\n",
+            args.Get("second").Int(-1))
+
+        fmt.Println(args.GetMapped())
+        fmt.Println(args.GetUnmapped())
+
+        return nil
     })
 
     if err := cmd.Parse(); err != nil {
@@ -40,14 +41,12 @@ func main() {
 }
 
 func Version(_ *goargs.Args) error {
-    filename := filepath.Base(os.Args[0])
-    version := "0.0.1-beta"
 
     fmt.Printf("%s %s %s/%s\n",
-        filename,
-        version,
-        "linux",
-        "amd64")
+        filepath.Base(os.Args[0]),
+        "0.0.1-beta",
+        runtime.GOOS,
+        runtime.GOARCH)
 
     return nil
 }
