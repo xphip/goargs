@@ -47,13 +47,8 @@ func (args *Args) GetUnmapped() []*Arg {
 
 // GetPos returns an unmapped argument based on its index.
 func (args *Args) GetPos(position int) *Arg {
-	if position < 0 || position > args.Size() - 1 {
+	if position < 0 || position > len(args.list) - 1 {
 		return nil
 	}
 	return args.list[position]
-}
-
-// Size
-func (args *Args) Size() int {
-	return len(args.list)
 }
