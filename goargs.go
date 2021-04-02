@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var (
+const (
 	UsageComplement = "\nRun 'help' for usage."
 	MissingParameter = "error: missing parameter" + UsageComplement
 	UnknownCommand = "error: unknown command" + UsageComplement
@@ -27,11 +27,14 @@ func New() *GoArgs {
 	return ga
 }
 
+// Add adds and returns a new subcommand tree.
 func (ga *GoArgs) Add(name string) *Cmd {
 	ga.cmd.Add(name)
 	return ga.cmd.subCmd[name]
 }
 
+// Parse parses the list of arguments.
+// Must be called after all commands have been defined.
 func (ga *GoArgs) Parse() error {
 
 	var _args []string
