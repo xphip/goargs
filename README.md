@@ -21,17 +21,17 @@ func main() {
     cmd.Add("test").
         Usage("Print app version").
         Map([]string{"first", "second"}).
-        Exec(func(args *goargs.Args) error {
+        Exec(func (args *goargs.Args) error {
 
-        fmt.Printf("First(string): %s\n",
-            args.Get("first").String())
-        fmt.Printf("Second(number or -1): %d\n",
-            args.Get("second").Int(-1))
+            fmt.Printf("First(string): %s\n",
+                args.Get("first").String())
+            fmt.Printf("Second(number or -1): %d\n",
+                args.Get("second").Int(-1))
 
-        fmt.Println(args.GetMapped())
-        fmt.Println(args.GetUnmapped())
+            fmt.Println(args.GetMapped())
+            fmt.Println(args.GetUnmapped())
 
-        return nil
+            return nil
     })
 
     if err := cmd.Parse(); err != nil {

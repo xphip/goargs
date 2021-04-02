@@ -16,7 +16,7 @@ func main() {
 	cmd.Add("test").
 		Usage("Print app version").
 		Map([]string{"first", "second"}).
-		Exec(func(args *goargs.Args) error {
+		Exec(func (args *goargs.Args) error {
 
 			fmt.Printf("First(string): %s\n",
 				args.Get("first").String())
