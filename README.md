@@ -19,7 +19,7 @@ func main() {
     cmd.Add("version").Usage("Print app version").Exec(Version)
 
     cmd.Add("test").
-        Usage("Print app version").
+        Usage("Just a test").
         Map([]string{"first", "second"}).
         Exec(func (args *goargs.Args) error {
 
