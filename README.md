@@ -1,7 +1,9 @@
 # GOARGS
 _(WIP)_ Light implementation for command-line flag parsing. 
 ___
-**GoArgs is in the development phase. Don't use in production!**
+**GoArgs is in the development phase and doesn't have a stable version yet.**
+
+**Don't use in production!**
 ___
 ```
 # Example:
