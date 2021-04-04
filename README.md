@@ -1,6 +1,8 @@
 # GOARGS
 _(WIP)_ Light implementation for command-line flag parsing. 
-
+___
+**GoArgs is in the development phase. Don't use in production!**
+___
 ```
 # Example:
 < ./simple_usage version
@@ -11,6 +13,12 @@ _(WIP)_ Light implementation for command-line flag parsing.
   Second(number or -1): -1
   map[first:a second:b]
   [c]
+
+< ./simple_usage help
+> Usage: simple_usage 
+
+      version    Print app version
+         test    Just a test
 ``` 
 ```go
 func main() {
