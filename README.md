@@ -35,15 +35,13 @@ func main() {
     a := cmd.Add("a").Usage("Letter A.")
     b := a.Add("b").Usage("Letter B.")
 
-    b.Add("c").
-      Usage("Letter C.").
+    b.Add("c").Usage("Letter C.").
       Exec(func (_ *goargs.Args) error {
           fmt.Println("Alphabet!")
           return nil
       })
 
-    cmd.Add("test").
-        Usage("Just a test").
+    cmd.Add("test").Usage("Just a test").
         Map([]string{"first", "second"}).
         Exec(Test)
 
