@@ -15,26 +15,18 @@ func main() {
 
 	a := cmd.Add("a").Usage("Letter A.")
 	b := a.Add("b").Usage("Letter B.")
-	b.Add("c").Usage("Letter C.").Exec(func (_ *goargs.Args) error {
-		fmt.Println("Alphabet!")
-		return nil
-	})
+
+	b.Add("c").
+		Usage("Letter C.").
+		Exec(func (_ *goargs.Args) error {
+			fmt.Println("Alphabet!")
+			return nil
+		})
 
 	cmd.Add("test").
 		Usage("Just a test").
 		Map([]string{"first", "second"}).
-		Exec(func (args *goargs.Args) error {
-
-			fmt.Printf("First(string): %s\n",
-				args.Get("first").String())
-			fmt.Printf("Second(number or -1): %d\n",
-				args.Get("second").Int(-1))
-
-			fmt.Println(args.GetMapped())
-			fmt.Println(args.GetUnmapped())
-
-			return nil
-	})
+		Exec(Test)
 
 	if err := cmd.Parse(); err != nil {
 		fmt.Println(err)
@@ -49,6 +41,20 @@ func Version(_ *goargs.Args) error {
 		"0.0.1-beta",
 		runtime.GOOS,
 		runtime.GOARCH)
+
+	return nil
+}
+
+func Test(args *goargs.Args) error {
+
+	fmt.Printf("First(string): %s\n",
+		args.Get("first").String())
+
+	fmt.Printf("Second(number or -1): %d\n",
+		args.Get("second").Int(-1))
+
+	fmt.Println(args.GetMapped())
+	fmt.Println(args.GetUnmapped())
 
 	return nil
 }

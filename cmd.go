@@ -1,8 +1,6 @@
 package goargs
 
-import (
-	"errors"
-)
+import "errors"
 
 // Cmd is the instance for a command.
 type Cmd struct {
