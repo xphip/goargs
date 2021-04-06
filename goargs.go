@@ -6,22 +6,20 @@ import (
 	"path/filepath"
 )
 
-// TODO: doc
 const (
 	UsageComplement = "\nRun 'help' for usage."
 	MissingParameter = "error: missing parameter" + UsageComplement
 	UnknownCommand = "error: unknown command" + UsageComplement
-	//UnknownError = "error: unknown error" + UsageComplement
 )
 
-// TODO: doc
+// GoArgs is the framework instance.
 type GoArgs struct {
 	cmd        *Cmd
 	helperFlag string
 	template   func (UsageList) error
 }
 
-// TODO: doc
+// New returns a new instance of GoArgs.
 func New() *GoArgs {
 	ga := &GoArgs{
 		cmd: &Cmd{
@@ -64,8 +62,16 @@ func (ga *GoArgs) Parse() error {
 	return cmd.exec(args)
 }
 
+// SetTemplate defines the function that will be called to generate the customized output.
+// The function receives a UsageList containing information needed to assemble the output.
 func (ga *GoArgs) SetTemplate(templateFn func (UsageList) error) *GoArgs {
 	ga.template = templateFn
+	return ga
+}
+
+// SetHelperFlag sets the flag that will invoke usage method.
+func (ga *GoArgs) SetHelperFlag(helperFlag string) *GoArgs {
+	ga.helperFlag = helperFlag
 	return ga
 }
 

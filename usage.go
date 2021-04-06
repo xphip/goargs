@@ -30,8 +30,8 @@ func defaultTemplate(usageList UsageList) error {
 	}
 
 	for _, usage := range usageList.List {
-		// Align: "%-d" to left, "%d" to right
-		fmt.Printf(fmt.Sprintf(" %%%ds  %%s\n", usageList.SpacingLength),
+		// Align: "-%d" to left, "%d" to right
+		fmt.Printf(fmt.Sprintf("  %%-%ds  %%s\n", usageList.SpacingLength + 2),
 			usage.flag,
 			usage.desc)
 	}

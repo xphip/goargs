@@ -9,18 +9,21 @@ ___
 # Example:
 < ./simple_usage version
 > simple_usage 0.0.1-beta linux/amd64
-
+```
+```
 < ./simple_usage test a b c
 > First(string): a
   Second(number or -1): -1
   map[first:a second:b]
   [c]
-
+```
+```
 < ./simple_usage help
 > Usage: simple_usage 
 
-      version    Print app version
-         test    Just a test
+    a          Letter A.
+    test       Just a test
+    version    Print app version
 ``` 
 ```go
 func main() {

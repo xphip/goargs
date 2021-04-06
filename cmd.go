@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-// Cmd is the structure of each subcommand.
+// Cmd is the instance for a command.
 type Cmd struct {
 	name    string
 	usage   string
@@ -13,7 +13,7 @@ type Cmd struct {
 	exec    func (args *Args) error
 }
 
-// Add adds a subcommand to the parent node and is returned.
+// Add attach a new Cmd instance to the parent node and returns it.
 func (cmd *Cmd) Add(name string) *Cmd {
 	cmd.subCmd[name] = &Cmd{
 		name:    name,
