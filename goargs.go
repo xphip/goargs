@@ -31,7 +31,7 @@ func New() *GoArgs {
 	return ga
 }
 
-// Add adds and returns a new subcommand tree.
+// Add creates and attach a new Cmd instance.
 func (ga *GoArgs) Add(name string) *Cmd {
 	ga.cmd.Add(name)
 	return ga.cmd.subCmd[name]

@@ -2,7 +2,7 @@ package goargs
 
 import "fmt"
 
-// TODO: doc
+// UsageList is the instance received by the usage function.
 type UsageList struct {
 	FileName       string
 	Path           string
@@ -11,7 +11,7 @@ type UsageList struct {
 	List           []*Usage
 }
 
-// TODO: doc
+// Usage
 type Usage struct {
 	flag string
 	desc string

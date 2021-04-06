@@ -5,28 +5,40 @@ ___
 
 **Don't use in production!**
 ___
+
+## Getting Started
+
+### Installation
+1. Run `go get`:
+```sh
+$ go get -u github.com/xphip/goargs
 ```
-# Example:
-< ./simple_usage version
+2. Import in your code:
+```go
+import "github.com/xphip/goargs"
+```
+
+## Examples
+```sh
+$ ./simple_usage version
 > simple_usage 0.0.1-beta linux/amd64
 ```
-```
-< ./simple_usage test a b c
+```sh
+$ ./simple_usage test a b c
 > First(string): a
   Second(number or -1): -1
   map[first:a second:b]
   [c]
 ```
-```
-< ./simple_usage help
+```sh
+$ ./simple_usage help
 > Usage: simple_usage 
 
     a          Letter A.
     test       Just a test
     version    Print app version
-``` 
+```
 ```go
-
 func main() {
     cmd := goargs.New()
 
