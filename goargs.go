@@ -2,7 +2,6 @@ package goargs
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -12,7 +11,7 @@ const (
 	UsageComplement = "\nRun 'help' for usage."
 	MissingParameter = "error: missing parameter" + UsageComplement
 	UnknownCommand = "error: unknown command" + UsageComplement
-	UnknownError = "error: unknown error" + UsageComplement
+	//UnknownError = "error: unknown error" + UsageComplement
 )
 
 // TODO: doc
@@ -45,8 +44,12 @@ func (ga *GoArgs) Add(name string) *Cmd {
 func (ga *GoArgs) Parse() error {
 	_args := os.Args[1:]
 
-	if len(_args) == 0 || _args[0] == ga.helperFlag {
+	if len(_args) == 0 {
 		return ga.parseUsage(_args)
+	}
+
+	if _args[0] == ga.helperFlag {
+		return ga.parseUsage(_args[1:])
 	}
 
 	cmd, args, err := ga.parseCmd(_args)
@@ -61,6 +64,11 @@ func (ga *GoArgs) Parse() error {
 	return cmd.exec(args)
 }
 
+func (ga *GoArgs) SetTemplate(templateFn func (UsageList) error) *GoArgs {
+	ga.template = templateFn
+	return ga
+}
+
 func (ga *GoArgs) parseCmd(args []string) (*Cmd, *Args, error) {
 	cmd := ga.cmd
 
@@ -68,12 +76,15 @@ func (ga *GoArgs) parseCmd(args []string) (*Cmd, *Args, error) {
 		return nil, nil, errors.New(UnknownCommand)
 	}
 
-	cmd = cmd.subCmd[args[0]]
+	for len(cmd.subCmd) > 0 {
+		if len(args) == 0 {
+			return nil, nil, errors.New(MissingParameter)
+		}
 
-	for len(args) > 0 && len(cmd.subCmd) != 0 {
 		if _, ok := cmd.subCmd[args[0]]; !ok {
 			return nil, nil, errors.New(UnknownCommand)
 		}
+
 		cmd = cmd.subCmd[args[0]]
 		args = args[1:]
 	}
@@ -88,52 +99,42 @@ func (ga *GoArgs) parseCmd(args []string) (*Cmd, *Args, error) {
 
 func (ga *GoArgs) parseUsage(args []string) error {
 	cmd := ga.cmd
+	argsLength := len(args)
 
-	if len(args) > 1 {
-		if args[0] == ga.helperFlag {
-			args = args[1:]
-		}
-
+	if argsLength > 0 {
 		if _, ok := cmd.subCmd[args[0]]; !ok {
 			return errors.New(UnknownCommand)
 		}
-		cmd = cmd.subCmd[args[0]]
 	}
 
 	usageList := UsageList{
 		FileName: filepath.Base(os.Args[0]),
 		Path: "",
 		SpacingLength: 0,
-		StartSpacing: fmt.Sprintf("%4s", ""),
-		BetweenSpacing: fmt.Sprintf("%4s", ""),
 		List: make([]*Usage, 0),
 	}
 
-	for c:=0; c < len(args) - 1; c++ {
-		usageList.Path += cmd.name + " "
-		if _, ok := cmd.subCmd[args[c]]; !ok {
+	for c := 0; c < argsLength; c++ {
+		index := args[c]
+		if _, ok := cmd.subCmd[index]; !ok {
 			return errors.New(UnknownCommand)
 		}
-		cmd = cmd.subCmd[args[c]]
+
+		cmd = cmd.subCmd[index]
+		usageList.Path += cmd.name + " "
 	}
 
-	if len(cmd.subCmd) != 0 {
-		for _, cmdFlags := range cmd.subCmd {
-			usageList.List = append(usageList.List, &Usage{
-				flag: cmdFlags.name,
-				desc: cmdFlags.usage,
-			})
-			if len(cmdFlags.name) > usageList.SpacingLength {
-				usageList.SpacingLength = len(cmdFlags.name)
-			}
-		}
-	} else {
+	usageList.CurrentUsage = cmd.usage
+
+	for _, cmdFlags := range cmd.subCmd {
 		usageList.List = append(usageList.List, &Usage{
-			flag: "",
-			desc: cmd.usage,
+			flag: cmdFlags.name,
+			desc: cmdFlags.usage,
 		})
-		usageList.StartSpacing = ""
-		usageList.SpacingLength = 0
+
+		if len(cmdFlags.name) > usageList.SpacingLength {
+			usageList.SpacingLength = len(cmdFlags.name)
+		}
 	}
 
 	if ga.template != nil {

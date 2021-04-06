@@ -2,15 +2,16 @@ package goargs
 
 import "fmt"
 
+// TODO: doc
 type UsageList struct {
 	FileName       string
 	Path           string
 	SpacingLength  int
-	StartSpacing   string
-	BetweenSpacing string
+	CurrentUsage   string
 	List           []*Usage
 }
 
+// TODO: doc
 type Usage struct {
 	flag string
 	desc string
@@ -18,10 +19,21 @@ type Usage struct {
 
 func defaultTemplate(usageList UsageList) error {
 
-	fmt.Printf("Usage: %s %s\n\n", usageList.FileName, usageList.Path)
-	var row = fmt.Sprintf("%s%%%ds%s%%s\n", usageList.StartSpacing, usageList.SpacingLength, usageList.BetweenSpacing)
+	fmt.Printf("\nUsage: %s %s\n\n", usageList.FileName, usageList.Path)
+
+	if usageList.CurrentUsage != "" {
+		fmt.Printf("%s\n", usageList.CurrentUsage)
+
+		if len(usageList.List) > 0 {
+			fmt.Printf("\n")
+		}
+	}
+
 	for _, usage := range usageList.List {
-		fmt.Printf(row, usage.flag, usage.desc)
+		// Align: "%-d" to left, "%d" to right
+		fmt.Printf(fmt.Sprintf(" %%%ds  %%s\n", usageList.SpacingLength),
+			usage.flag,
+			usage.desc)
 	}
 
 	return nil

@@ -13,6 +13,13 @@ func main() {
 
 	cmd.Add("version").Usage("Print app version").Exec(Version)
 
+	a := cmd.Add("a").Usage("Letter A.")
+	b := a.Add("b").Usage("Letter B.")
+	b.Add("c").Usage("Letter C.").Exec(func (_ *goargs.Args) error {
+		fmt.Println("Alphabet!")
+		return nil
+	})
+
 	cmd.Add("test").
 		Usage("Just a test").
 		Map([]string{"first", "second"}).

@@ -1,6 +1,8 @@
 package goargs
 
-import "errors"
+import (
+	"errors"
+)
 
 // Cmd is the structure of each subcommand.
 type Cmd struct {
@@ -20,7 +22,7 @@ func (cmd *Cmd) Add(name string) *Cmd {
 		subCmd:  make(map[string]*Cmd),
 		exec:    nil,
 	}
-	return cmd
+	return cmd.subCmd[name]
 }
 
 // Usage defines the current subcommand description.
@@ -45,7 +47,6 @@ func (cmd *Cmd) Exec(fn func (args *Args) error) {
 
 // parseArgs parses the arguments and returns an Args type.
 func (cmd *Cmd) parseArgs(a []string) (*Args, error) {
-	a = a[1:]
 
 	if len(cmd.mapping) > len(a) {
 		return nil, errors.New(MissingParameter)
