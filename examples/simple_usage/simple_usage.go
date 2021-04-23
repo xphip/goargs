@@ -11,8 +11,6 @@ import (
 func main() {
 	cmd := goargs.New()
 
-	cmd.Add("version").Usage("Print app version").Exec(Version)
-
 	a := cmd.Add("a").Usage("Letter A.")
 	b := a.Add("b").Usage("Letter B.")
 
@@ -25,6 +23,8 @@ func main() {
 	cmd.Add("test").Usage("Just a test").
 		Map([]string{"first", "second"}).
 		Exec(Test)
+
+	cmd.Add("version").Usage("Print app version").Exec(Version)
 
 	if err := cmd.Parse(); err != nil {
 		fmt.Println(err)

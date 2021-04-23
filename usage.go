@@ -11,7 +11,6 @@ type UsageList struct {
 	List           []*Usage
 }
 
-// Usage
 type Usage struct {
 	flag string
 	desc string
@@ -19,7 +18,7 @@ type Usage struct {
 
 func defaultTemplate(usageList UsageList) error {
 
-	fmt.Printf("\nUsage: %s %s\n\n", usageList.FileName, usageList.Path)
+	fmt.Printf("Usage: %s %s\n\n", usageList.FileName, usageList.Path)
 
 	if usageList.CurrentUsage != "" {
 		fmt.Printf("%s\n", usageList.CurrentUsage)

@@ -1,15 +1,8 @@
 package goargs
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
-)
-
-const (
-	UsageComplement = "\nRun 'help' for usage."
-	MissingParameter = "error: missing parameter" + UsageComplement
-	UnknownCommand = "error: unknown command" + UsageComplement
 )
 
 // GoArgs is the framework instance.
@@ -23,7 +16,10 @@ type GoArgs struct {
 func New() *GoArgs {
 	ga := &GoArgs{
 		cmd: &Cmd{
-			subCmd: make(map[string]*Cmd),
+			subCmd: SubCmd{
+				mapped: make(map[string]*Cmd),
+				list:   make([]*Cmd, 0),
+			},
 		},
 		helperFlag: "help",
 		template:   nil,
@@ -33,8 +29,7 @@ func New() *GoArgs {
 
 // Add creates and attach a new Cmd instance.
 func (ga *GoArgs) Add(name string) *Cmd {
-	ga.cmd.Add(name)
-	return ga.cmd.subCmd[name]
+	return ga.cmd.Add(name)
 }
 
 // Parse parses the list of arguments.
@@ -77,27 +72,26 @@ func (ga *GoArgs) SetHelperFlag(helperFlag string) *GoArgs {
 
 func (ga *GoArgs) parseCmd(args []string) (*Cmd, *Args, error) {
 	cmd := ga.cmd
+	usagePath := append(BasePathUsage, ga.helperFlag)
 
-	if _, ok := cmd.subCmd[args[0]]; !ok {
-		return nil, nil, errors.New(UnknownCommand)
-	}
-
-	for len(cmd.subCmd) > 0 {
+	for cmd.exec == nil {
 		if len(args) == 0 {
-			return nil, nil, errors.New(MissingParameter)
+			return nil, nil, ErrorFormatter(MissingParameter, usagePath)
 		}
 
-		if _, ok := cmd.subCmd[args[0]]; !ok {
-			return nil, nil, errors.New(UnknownCommand)
-		}
+		if _cmd, ok := cmd.subCmd.mapped[args[0]]; !ok {
+			return nil, nil, ErrorFormatter(UnknownCommand, usagePath)
 
-		cmd = cmd.subCmd[args[0]]
-		args = args[1:]
+		} else {
+			usagePath = append(usagePath, args[0])
+			cmd = _cmd
+			args = args[1:]
+		}
 	}
 
-	_args, err := cmd.parseArgs(args)
-	if err != nil {
-		return nil, nil, err
+	_args, ok := cmd.parseArgs(args)
+	if !ok {
+		return nil, nil, ErrorFormatter(MissingParameter, usagePath)
 	}
 
 	return cmd, _args, nil
@@ -106,10 +100,11 @@ func (ga *GoArgs) parseCmd(args []string) (*Cmd, *Args, error) {
 func (ga *GoArgs) parseUsage(args []string) error {
 	cmd := ga.cmd
 	argsLength := len(args)
+	usagePath := append(BasePathUsage, ga.helperFlag)
 
 	if argsLength > 0 {
-		if _, ok := cmd.subCmd[args[0]]; !ok {
-			return errors.New(UnknownCommand)
+		if _, ok := cmd.subCmd.mapped[args[0]]; !ok {
+			return ErrorFormatter(UnknownCommand, usagePath)
 		}
 	}
 
@@ -122,17 +117,18 @@ func (ga *GoArgs) parseUsage(args []string) error {
 
 	for c := 0; c < argsLength; c++ {
 		index := args[c]
-		if _, ok := cmd.subCmd[index]; !ok {
-			return errors.New(UnknownCommand)
+		if _, ok := cmd.subCmd.mapped[index]; !ok {
+			return ErrorFormatter(UnknownCommand, usagePath)
 		}
 
-		cmd = cmd.subCmd[index]
+		usagePath = append(usagePath, args[c])
+		cmd = cmd.subCmd.mapped[index]
 		usageList.Path += cmd.name + " "
 	}
 
 	usageList.CurrentUsage = cmd.usage
 
-	for _, cmdFlags := range cmd.subCmd {
+	for _, cmdFlags := range cmd.subCmd.list {
 		usageList.List = append(usageList.List, &Usage{
 			flag: cmdFlags.name,
 			desc: cmdFlags.usage,

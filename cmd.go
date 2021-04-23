@@ -1,26 +1,41 @@
 package goargs
 
-import "errors"
+type SubCmd struct {
+	mapped  map[string]*Cmd
+	list  []*Cmd
+}
+
+func (sc SubCmd) GetIndex(index int) *Cmd {
+	if index >= len(sc.list) || index <= 0 {
+		return nil
+	}
+	return sc.list[index]
+}
 
 // Cmd is the instance for a command.
 type Cmd struct {
 	name    string
 	usage   string
 	mapping []string
-	subCmd  map[string]*Cmd
+	subCmd  SubCmd
 	exec    func (args *Args) error
 }
 
 // Add attach a new Cmd instance to the parent node and returns it.
 func (cmd *Cmd) Add(name string) *Cmd {
-	cmd.subCmd[name] = &Cmd{
+	subCmd := &Cmd{
 		name:    name,
 		usage:   "",
 		mapping: make([]string, 0),
-		subCmd:  make(map[string]*Cmd),
+		subCmd:  SubCmd{
+			mapped: make(map[string]*Cmd),
+			list:   make([]*Cmd, 0),
+		},
 		exec:    nil,
 	}
-	return cmd.subCmd[name]
+	cmd.subCmd.mapped[name] = subCmd
+	cmd.subCmd.list = append(cmd.subCmd.list, subCmd)
+	return subCmd
 }
 
 // Usage defines the current subcommand description.
@@ -43,11 +58,10 @@ func (cmd *Cmd) Exec(fn func (args *Args) error) {
 	cmd.exec = fn
 }
 
-// parseArgs parses the arguments and returns an Args type.
-func (cmd *Cmd) parseArgs(a []string) (*Args, error) {
+func (cmd *Cmd) parseArgs(a []string) (*Args, bool) {
 
 	if len(cmd.mapping) > len(a) {
-		return nil, errors.New(MissingParameter)
+		return nil, false
 	}
 
 	args := newArgs()
@@ -61,5 +75,5 @@ func (cmd *Cmd) parseArgs(a []string) (*Args, error) {
 		args.addUnmapped(arg)
 	}
 
-	return args, nil
+	return args, true
 }
